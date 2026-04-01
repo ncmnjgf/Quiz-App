@@ -9,10 +9,10 @@ const audio = new Audio(clickAudio);
 
 const QuestionBox = (props) => {
   const context = useContext(quizContext);
-  const { setScore, score, next, setNext, len, answerList, setAnswerList } =
+  const { setScore, score, next, setNext, answerList, setAnswerList } =
     context;
 
-  const { question, options, category } = props;
+  const { question, options, category, len } = props;
 
   const [selectedAns, setSelectedAns] = useState("");
   const [timer, setTimer] = useState(30);
@@ -52,7 +52,7 @@ const QuestionBox = (props) => {
       },
     ]);
 
-    if (next < len - 1) {
+    if (next < len) {
       setNext(next + 1);
       setSelectedAns("");
       setTimer(30); // reset timer

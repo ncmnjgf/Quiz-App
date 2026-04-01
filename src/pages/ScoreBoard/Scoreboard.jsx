@@ -1,114 +1,129 @@
-import React from 'react'
-import { useContext } from 'react'
-import './Scoreboard.css'
-import { AiOutlineHome, AiOutlineEye } from 'react-icons/ai'
-import { BiReset } from 'react-icons/bi'
-import { BsShare } from 'react-icons/bs'
-import quizContext from '../../context/quizContext'
-import { Link as ReachLink } from 'react-router-dom'
+import React, { useContext } from "react";
+import quizContext from "../../context/quizContext";
+import { AiOutlineHome, AiOutlineEye } from "react-icons/ai";
+import { BiReset } from "react-icons/bi";
+import { BsShare } from "react-icons/bs";
+import { Link as ReachLink, useNavigate } from "react-router-dom";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 
-const Scoreboard = (props) => {
-    const context = useContext(quizContext)
-    const { setNext, setScore, setAnswerList } = context
-    const { total_que, correct_que, wrong_que } = props
-    let percentage = (correct_que / total_que) * 100
-    let Attempted = (correct_que + wrong_que) / total_que * 100
+const MotionBox = motion(Box);
 
-    const handleGoHome = () => {
-        window.location.reload()
-    }
+const Scoreboard = ({ total_que, correct_que, wrong_que }) => {
+  const { setNext, setScore, setAnswerList } = useContext(quizContext);
+  const navigate = useNavigate();
 
-    const handlePlayAgain = () => {
-        setNext(0)
-        setScore({ 'rightAnswers': 0, 'wrongAnswers': 0 })
-        setAnswerList([])
-    }
-    return (
-        <>
-            <div className="main">
-                <div className="score">
-                    Your Score <br />
-                    <span>{percentage.toFixed(2)} <small>%</small></span>
-                </div>
-                <div className="point-table">
+  /* 📊 CALCULATIONS */
+  const percentage = ((correct_que / total_que) * 100) || 0;
+  const attempted = ((correct_que + wrong_que) / total_que) * 100 || 0;
 
-                    <div className="semi-table">
-                        <div style={{ backgroundColor: '#A45EDA' }} className="circle"></div>
-                        <div className='mx-2'>
-                             <div className="point-info">
-                                Attempted
-                            </div>
-                            <div style={{ color: '/*#A45EDA*/#fff',width:"5.8rem",background:"#212832",padding:"0.5rem",borderRadius:"0.5rem" }} className="point">{Attempted.toFixed(2)}%</div>
-                            
-                        </div>
-                    </div>
-                    <div className="semi-table">
-                    <div style={{ backgroundColor:'#A45EDA' }} className="circle"></div>
-                        <div className='mx-2'>
-                        <div className="point-info">
-                                Total Questions
-                            </div>
-                            <div style={{ color: '#fff',width:"5.8rem",background:"#212832",padding:"0.5rem",borderRadius:"0.5rem"  }} className="point">{total_que}</div>
-                           
-                        </div>
-                    </div>
-                    <div className="semi-table">
-                        <div style={{ backgroundColor: 'rgb(6 143 86)' }} className="circle"></div>
-                        <div className='mx-2'>
-                        <div className="point-info">
-                                Correct
-                            </div>
-                            <div style={{ color: '/*rgb(6 143 86)*/#fff',background:"#212832",padding:"0.5rem",width:"5.8rem",borderRadius:"0.5rem"  }} className="point">{correct_que}</div>
-                           
-                        </div>
-                    </div>
-                    <div className="semi-table">
-                        <div style={{ backgroundColor: 'rgb(223 75 75)' }} className="circle"></div>
-                        <div className='mx-2'>
-                            <div className="point-info">
-                                Wrong
-                            </div>
-                            <div style={{ color: '/*rgb(223 75 75)*/#fff',width:"5.8rem",background:"#212832",padding:"0.5rem",borderRadius:"0.5rem"  }} className="point">{wrong_que}</div>
-                          
-                        </div>
-                    </div>
+  /* 🔄 ACTIONS */
+  const handleGoHome = () => {
+    navigate("/"); // ✅ better than reload
+  };
 
-                </div>
+  const handlePlayAgain = () => {
+    setNext(0);
+    setScore({ rightAnswers: 0, wrongAnswers: 0 });
+    setAnswerList([]);
+    navigate("/");
+  };
 
-                <div className="footer">
-                    <div className="text-center" onClick={handleGoHome}>
-                        <div style={{ backgroundColor: '#BE709F' }} className="home-btn">
-                            <AiOutlineHome />
-                        </div>
-                        <div className='footer-text'>Home</div>
-                    </div>
-                    <div className="text-center">
-                        <div style={{ backgroundColor: '#755ED3' }} className="home-btn">
-                            <BsShare />
-                        </div>
-                        <div className='footer-text'>Share Score</div>
-                    </div>
-                    <div className="text-center">
-                        <ReachLink to='/review'>
-                            <div style={{ backgroundColor: '#BF8D6F' }} className="home-btn">
-                                <AiOutlineEye />
-                            </div>
-                        </ReachLink>
-                        <div className='footer-text'>
-                            Review Answer
-                        </div>
-                    </div>
-                    <div className="text-center" onClick={handlePlayAgain}>
-                        <div style={{ backgroundColor: '#5492B3' }} className="home-btn">
-                            <BiReset />
-                        </div>
-                        <div className='footer-text'>Play Again</div>
-                    </div>
-                </div>
-            </div>
+  /* 📦 STAT CARD */
+  const StatCard = ({ label, value, color }) => (
+    <Box
+      flex="1"
+      minW="120px"
+      p={4}
+      borderRadius="12px"
+      bg="rgba(255,255,255,0.05)"
+      backdropFilter="blur(10px)"
+      border="1px solid rgba(255,255,255,0.1)"
+      textAlign="center"
+    >
+      <Text fontSize="sm" color="gray.400">
+        {label}
+      </Text>
+      <Text fontSize="xl" fontWeight="bold" color={color}>
+        {value}
+      </Text>
+    </Box>
+  );
 
-        </>
-    )
-}
+  return (
+    <MotionBox
+      maxW="700px"
+      mx="auto"
+      mt={10}
+      px={4}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      {/* 🏆 SCORE */}
+      <Box textAlign="center" mb={8}>
+        <Text fontSize="2xl" color="gray.400">
+          Your Score
+        </Text>
+        <Text
+          fontSize="5xl"
+          fontWeight="bold"
+          bgGradient="linear(to-r, green.300, teal.400)"
+          bgClip="text"
+        >
+          {percentage.toFixed(2)}%
+        </Text>
+      </Box>
 
-export default Scoreboard
+      {/* 📊 STATS */}
+      <Flex gap={4} wrap="wrap" justify="center">
+        <StatCard label="Attempted" value={`${attempted.toFixed(2)}%`} color="purple.300" />
+        <StatCard label="Total" value={total_que} color="blue.300" />
+        <StatCard label="Correct" value={correct_que} color="green.400" />
+        <StatCard label="Wrong" value={wrong_que} color="red.400" />
+      </Flex>
+
+      {/* 🔘 ACTIONS */}
+      <Flex justify="space-around" mt={10}>
+        <ActionButton icon={<AiOutlineHome />} label="Home" onClick={handleGoHome} color="pink.400" />
+        
+        <ActionButton icon={<BsShare />} label="Share" color="purple.400" />
+        
+        <ReachLink to="/review">
+          <ActionButton icon={<AiOutlineEye />} label="Review" color="orange.400" />
+        </ReachLink>
+
+        <ActionButton icon={<BiReset />} label="Play Again" onClick={handlePlayAgain} color="blue.400" />
+      </Flex>
+    </MotionBox>
+  );
+};
+
+/* 🔘 BUTTON COMPONENT */
+const ActionButton = ({ icon, label, onClick, color }) => (
+  <MotionBox
+    onClick={onClick}
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
+    textAlign="center"
+    cursor="pointer"
+  >
+    <Flex
+      align="center"
+      justify="center"
+      w="50px"
+      h="50px"
+      borderRadius="50%"
+      bg={color}
+      color="white"
+      fontSize="20px"
+      mb={1}
+    >
+      {icon}
+    </Flex>
+    <Text fontSize="sm" color="gray.300">
+      {label}
+    </Text>
+  </MotionBox>
+);
+
+export default Scoreboard;

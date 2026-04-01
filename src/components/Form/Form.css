@@ -90,3 +90,27 @@
 .submit-btn:hover {
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
+
+/* FIX SELECT DARK MODE ISSUE */
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #1f2733;   /* 🔥 force dark */
+  color: #e2e8f0;        /* 🔥 force text visible */
+  appearance: none;
+  cursor: pointer;
+}
+
+/* DROPDOWN OPTIONS */
+.form-group select option {
+  background: #1f2733;   /* 🔥 fix white dropdown */
+  color: #e2e8f0;
+}
+
+/* HOVER + FOCUS */
+.form-group select:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}

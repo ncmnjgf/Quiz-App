@@ -1,37 +1,73 @@
 import QuizContext from "./quizContext";
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
 
 const QuizState = (props) => {
+  const [questions, setQuestions] = useState([]);
+  const [score, setScore] = useState({
+    rightAnswers: 0,
+    wrongAnswers: 0,
+  });
+  const [next, setNext] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [answerList, setAnswerList] = useState([]);
 
-    const [questions, setQuestions] = useState([]);
-    const [score, setScore] = useState({ 'rightAnswers': 0, 'wrongAnswers': 0 });
-    const [next, setNext] = useState(0);
-    // const demoURL = 'https://opentdb.com/api.php?amount=4&category=&difficulty=&type=boolean'
-    const [url, setUrl] = useState('');
-    const [loading, setLoading] = useState(false);
-    const len = questions.length;
-    const [answerList, setAnswerList] = useState([])
+  /* 🚀 FETCH QUESTIONS */
+  const fetchQuestions = async (url) => {
+    try {
+      setLoading(true);
 
-    const fetchQuestions = async (api) => {
-        const response = await fetch(api);
-        const data = await response.json();
-        let results = data.results;
-        setQuestions(results);
-        setLoading(false);
-    };
+      // 🔥 prevent API spam
+      await new Promise((res) => setTimeout(res, 800));
 
-    useEffect(() => {
-        fetchQuestions(url);
-    }, [url]);
+      const res = await fetch(url);
 
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
 
+      const data = await res.json();
 
-    return (
-        <QuizContext.Provider value={{ answerList, setAnswerList, len, questions, setQuestions, url, setUrl, fetchQuestions, loading, setLoading, score, setScore, next, setNext }}>
-            {props.children}
-        </QuizContext.Provider>
-    )
-}
+      if (!data.results || data.results.length === 0) {
+        throw new Error("No questions found!");
+      }
 
-export default QuizState
+      setQuestions(data.results);
+    } catch (error) {
+      console.error("API ERROR:", error);
+      alert("⚠️ API limit reached or invalid request. Try again!");
+
+      setQuestions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* 🔄 RESET QUIZ */
+  const resetQuiz = () => {
+    setQuestions([]);
+    setScore({ rightAnswers: 0, wrongAnswers: 0 });
+    setNext(0);
+    setAnswerList([]);
+  };
+
+  return (
+    <QuizContext.Provider
+      value={{
+        questions,
+        score,
+        setScore,
+        next,
+        setNext,
+        loading,
+        answerList,
+        setAnswerList,
+        fetchQuestions,
+        resetQuiz,
+      }}
+    >
+      {props.children}
+    </QuizContext.Provider>
+  );
+};
+
+export default QuizState;

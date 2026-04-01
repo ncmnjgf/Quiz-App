@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, InfoIcon } from "@chakra-ui/icons";
 import { Link as ReachLink, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import quizContext from "../../context/quizContext";
 import { FaHome } from "react-icons/fa";
 import { motion } from "framer-motion";
 import logo from "./../../Assets/logo.png";
@@ -21,12 +23,13 @@ const MotionBox = motion(Box);
 export default function BetterNavbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
+  const { resetQuiz } = useContext(quizContext);
 
-  const NavItem = ({ to, icon, children }) => {
+  const NavItem = ({ to, icon, children, onClick }) => {
     const isActive = location.pathname === to;
 
     return (
-      <ReachLink to={to}>
+      <ReachLink to={to} onClick={onClick}>
         <HStack
           px={4}
           py={2}
@@ -77,10 +80,12 @@ export default function BetterNavbar() {
         mx="auto"
       >
         {/* LEFT */}
-        <HStack spacing={4}>
-          <MotionBox whileHover={{ scale: 1.1 }} transition={{ duration: 0.3 }}>
-            <Avatar size="sm" src={logo} />
-          </MotionBox>
+        <HStack spacing={4} cursor="pointer" onClick={resetQuiz}>
+          <ReachLink to="/">
+            <MotionBox whileHover={{ scale: 1.1 }} transition={{ duration: 0.3 }}>
+              <Avatar size="sm" src={logo} />
+            </MotionBox>
+          </ReachLink>
 
           <Text
             fontWeight="bold"
@@ -94,7 +99,7 @@ export default function BetterNavbar() {
 
         {/* DESKTOP MENU */}
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
-          <NavItem to="/" icon={<FaHome />}>
+          <NavItem to="/" icon={<FaHome />} onClick={resetQuiz}>
             Home
           </NavItem>
           <NavItem to="/about" icon={<InfoIcon />}>
@@ -122,10 +127,10 @@ export default function BetterNavbar() {
         >
           <Box px={6} pb={4} display={{ md: "none" }}>
             <Stack spacing={3}>
-              <NavItem to="/" icon={<FaHome />}>
+              <NavItem to="/" icon={<FaHome />} onClick={() => { resetQuiz(); onClose(); }}>
                 Home
               </NavItem>
-              <NavItem to="/about" icon={<InfoIcon />}>
+              <NavItem to="/about" icon={<InfoIcon />} onClick={onClose}>
                 About
               </NavItem>
             </Stack>
