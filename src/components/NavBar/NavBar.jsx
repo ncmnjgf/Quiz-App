@@ -8,7 +8,6 @@ import {
   useDisclosure,
   Stack,
   Text,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, InfoIcon } from "@chakra-ui/icons";
 import { Link as ReachLink, useLocation } from "react-router-dom";
