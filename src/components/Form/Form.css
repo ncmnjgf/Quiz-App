@@ -1,0 +1,92 @@
+/* CONTAINER */
+.form-container {
+  max-width: 500px;
+  margin: auto;
+  padding: 30px;
+}
+
+/* CARD */
+.quiz-form {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* TITLE */
+.form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #22c55e, #06b6d4);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* GROUP */
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* INPUT + SELECT */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: white;
+  outline: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+/* FOCUS EFFECT */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* LABEL */
+.form-group label {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 13px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+/* FLOATING LABEL */
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label,
+.form-group select:focus + label {
+  top: -8px;
+  left: 10px;
+  background: #1f2733;
+  padding: 0 5px;
+  font-size: 11px;
+  color: #22c55e;
+}
+
+/* BUTTON */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22c55e, #06b6d4);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}

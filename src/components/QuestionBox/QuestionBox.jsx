@@ -1,102 +1,146 @@
-import React, { useContext, useEffect, useState } from 'react'
-import './QuestionBox.css'
-import { Badge } from '@chakra-ui/react'
-import quizContext from '../../context/quizContext'
-import clickAudio from './../../Assets/select-sound.mp3'
+import React, { useContext, useEffect, useState } from "react";
+import "./QuestionBox.css";
+import { Badge } from "@chakra-ui/react";
+import { motion } from "framer-motion";
+import quizContext from "../../context/quizContext";
+import clickAudio from "./../../Assets/select-sound.mp3";
 
-// #0b4b06 - bg
-// #53a24db5 - border
 const audio = new Audio(clickAudio);
 
 const QuestionBox = (props) => {
+  const context = useContext(quizContext);
+  const { setScore, score, next, setNext, len, answerList, setAnswerList } =
+    context;
 
-    const [selectedAns, setSelectedAns] = useState('')
-    const context = useContext(quizContext)
-    const { setScore, score, next, setNext, len, answerList, setAnswerList } = context
-    const { question, options, category } = props
-    //Here options[0] = options array and options[1] = correct answer
-    let i = -1
-    const alphabet = ['A', 'B', 'C', 'D']
-    // let currentAlpha = ''
+  const { question, options, category } = props;
 
-    const removeClass = () => {
-        let element = document.getElementsByClassName('q-box_body')
-        for (let i = 0; i < element.length; i++) {
-            for (let j = 0; j < element[i].children.length; j++) {
-                element[i].children[j].classList.remove('optionSelected')
-            }
-        }
+  const [selectedAns, setSelectedAns] = useState("");
+  const [timer, setTimer] = useState(30);
+
+  const alphabet = ["A", "B", "C", "D"];
+
+  // ✅ CHECK ANSWER
+  const checkAnswer = () => {
+    if (!selectedAns) return;
+
+    if (selectedAns === options[1]) {
+      setScore({
+        ...score,
+        rightAnswers: score.rightAnswers + 1,
+      });
+    } else {
+      setScore({
+        ...score,
+        wrongAnswers: score.wrongAnswers + 1,
+      });
+    }
+  };
+
+  // ✅ NEXT QUESTION
+  const handleNextQuestion = () => {
+    checkAnswer();
+
+    setAnswerList([
+      ...answerList,
+      {
+        question,
+        options: options[0],
+        id: `id${next}`,
+        category,
+        myAnswer: selectedAns,
+        rightAnswer: options[1],
+      },
+    ]);
+
+    if (next < len - 1) {
+      setNext(next + 1);
+      setSelectedAns("");
+      setTimer(30); // reset timer
+    }
+  };
+
+  // ✅ TIMER FIXED
+  useEffect(() => {
+    if (timer === 0) {
+      handleNextQuestion();
+      return;
     }
 
-    //Update the score 
-    const checkAnswer = (selectedAns) => {
-        if (selectedAns === '') {
-            return true;
-        } else if (selectedAns === options[1]) {
-            setScore({ ...score, 'rightAnswers': score.rightAnswers + 1 })
-        } else {
-            setScore({ ...score, 'wrongAnswers': score.wrongAnswers + 1 })
-        }
-    }
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
 
-    const handleOptionClick = (e) => {
-        audio.play();
-        removeClass()
-        setSelectedAns((e.target.innerText.slice(1)).trim())
-        const currentAlpha = e.target.innerText[0]
-        document.getElementById(currentAlpha).classList.add('optionSelected')
-    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
-    const handleNextQuestion = () => {
-        if (next <= len - 1) {
-            checkAnswer(selectedAns)
-            setNext(next + 1)
-            setSelectedAns('')
-        }
-        setAnswerList([...answerList, { 'question': question, 'options': options[0], 'id': `id${next}`, 'category': category, 'myAnswer': selectedAns, 'rightAnswer': options[1] }])
-    }
+  // ✅ OPTION CLICK
+  const handleOptionClick = (opt) => {
+    audio.currentTime = 0;
+    audio.play();
+    setSelectedAns(opt);
+  };
 
-    // for reverse timer
-    const [timer, setTimer] = useState(30)
+  return (
+    <div className="q-box mx-auto my-5 text-center fade-in">
+      {/* HEADER */}
+      <div className="q-box_head">
+        <div className="q-box_timer">{timer}s</div>
 
-    useEffect(() => {
-        let myInterval = setInterval(() => {
-            if (timer > 0) {
-                setTimer(timer - 1)
-            } else {
-                setNext(next + 1)
-            }
-        }, 1000)
-        return () => {
-            clearInterval(myInterval);
-        };
-    })
+        <div
+          className="q-question"
+          dangerouslySetInnerHTML={{ __html: question }}
+        ></div>
+      </div>
 
+      {/* OPTIONS */}
+      <div className="q-box_body">
+        {options[0].map((opt, index) => {
+          const letter = alphabet[index];
+          const isSelected = selectedAns === opt;
 
-    return (
-        <>
-            <div className="q-box mx-auto my-5 p-4 text-center">
-                <div className="q-box_head">
-                    <div className="q-box_timer">{timer}s</div>
-                    <div className="q-question" dangerouslySetInnerHTML={{ __html: question }}></div>
-                </div>
-                <div className="q-box_body">
-                    {
-                        options[0].map((index) => {
-                            i++;
-                            return <div id={alphabet[i]} key={index} onClick={handleOptionClick} className="q-box_options">
-                                <div className='option-icon'>{alphabet[i]}</div> <div dangerouslySetInnerHTML={{ __html: index }}></div>
-                            </div>
-                        })
-                    }
-                </div>
-                <div className="d-flex flex-wrap justify-content-between align-items-center mx-3">
-                    <Badge colorScheme='purple'>{category}</Badge>
-                    <button onClick={handleNextQuestion} className="btn btn-primary m-2">{(next >= len - 1) ? 'Submit' : 'Next'}</button>
-                </div>
-            </div>
-        </>
-    )
-}
+          return (
+            <motion.div
+              key={opt}
+              onClick={() => handleOptionClick(opt)}
+              className={`q-box_options ${
+                isSelected ? "optionSelected" : ""
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              <div className="option-icon">{letter}</div>
 
-export default QuestionBox
+              <div
+                dangerouslySetInnerHTML={{ __html: opt }}
+              ></div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* FOOTER */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center mx-3 mt-3">
+        <Badge
+          colorScheme="purple"
+          px={3}
+          py={1}
+          borderRadius="full"
+          fontSize="0.8rem"
+        >
+          {category}
+        </Badge>
+
+        <motion.button
+          onClick={handleNextQuestion}
+          className="btn m-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {next >= len - 1 ? "Submit" : "Next"}
+        </motion.button>
+      </div>
+    </div>
+  );
+};
+
+export default QuestionBox;

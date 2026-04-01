@@ -1,57 +1,85 @@
-import React from 'react'
-import quizData from '../../components/TriviaQuizData'
+import React from "react";
+import { motion } from "framer-motion";
+import quizData from "../../components/TriviaQuizData";
+import "./Form.css";
 
 const Form = (props) => {
+  const { handleSubmit, onChange } = props;
 
-    const { handleSubmit, onChange } = props
+  const getOptionsValue = (data) => {
+    return data.map((item) => {
+      const key = Object.keys(item)[0];
+      return (
+        <option key={key} value={item[key]}>
+          {key}
+        </option>
+      );
+    });
+  };
 
-    const getOptionsValue = (data) => {
-        return data.map((item) => {
-            let objectKeys = Object.keys(item)[0]
-            return <option key={objectKeys} value={item[objectKeys]}>{objectKeys}</option>
-        })
-    }
+  return (
+    <motion.div
+      className="form-container"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <form onSubmit={handleSubmit} className="quiz-form">
+        
+        {/* TITLE */}
+        <h2 className="form-title">Start Your Quiz 🚀</h2>
 
-    return (
-        <>
-            <form className='mt-2' onSubmit={handleSubmit}>
+        {/* NUMBER */}
+        <div className="form-group">
+          <input
+            type="number"
+            name="number"
+            required
+            onChange={onChange}
+            placeholder=" "
+          />
+          <label>Number of Questions</label>
+        </div>
 
-                <div className="mb-3">
-                    <label htmlFor="number" className="form-label">Number of Questions:</label>
-                    <input placeholder='Enter Number of Questions' type="number" name='number' className="form-control" id="number" onChange={onChange} required />
-                </div>
+        {/* CATEGORY */}
+        <div className="form-group">
+          <select name="category" onChange={onChange}>
+            <option value="any">Any Category</option>
+            {getOptionsValue(quizData.category)}
+          </select>
+          <label>Select Category</label>
+        </div>
 
-                <div className="mb-3">
-                    <label htmlFor="category" className="form-label">Select Category:</label>
-                    <select name='category' className="form-select" aria-label="Default select example" onChange={onChange}>
-                        <option value={'any'} defaultValue>Any Category</option>
-                        {
-                            getOptionsValue(quizData.category)
-                        }
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="difficulty" className="form-label">Select Difficulty:</label>
-                    <select name='difficulty' className="form-select" aria-label="Default select example" onChange={onChange}>
-                        <option value={'any'} defaultValue>Any Difficulty</option>
-                        {
-                            getOptionsValue(quizData.difficulty)
-                        }
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="type" className="form-label">Select Type:</label>
-                    <select name='type' className="form-select" aria-label="Default select example" onChange={onChange}>
-                        <option value={'any'} defaultValue>Any Type</option>
-                        {
-                            getOptionsValue(quizData.type)
-                        }
-                    </select>
-                </div>
-                <button type="submit" className="btn btn-primary">Start Quiz</button>
-            </form>
-        </>
-    )
-}
+        {/* DIFFICULTY */}
+        <div className="form-group">
+          <select name="difficulty" onChange={onChange}>
+            <option value="any">Any Difficulty</option>
+            {getOptionsValue(quizData.difficulty)}
+          </select>
+          <label>Select Difficulty</label>
+        </div>
 
-export default Form
+        {/* TYPE */}
+        <div className="form-group">
+          <select name="type" onChange={onChange}>
+            <option value="any">Any Type</option>
+            {getOptionsValue(quizData.type)}
+          </select>
+          <label>Select Type</label>
+        </div>
+
+        {/* BUTTON */}
+        <motion.button
+          type="submit"
+          className="submit-btn"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Start Quiz →
+        </motion.button>
+      </form>
+    </motion.div>
+  );
+};
+
+export default Form;
